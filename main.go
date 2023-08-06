@@ -31,7 +31,7 @@ func GetIp(w http.ResponseWriter, r *http.Request) {
 func GetElem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	file_data, err := ioutil.ReadFile("text.json")
+	file_data, err := ioutil.ReadFile("text.txt")
 	if err != nil {
 		fmt.Println("Файл не читается или не существует!\n", err)
 	}

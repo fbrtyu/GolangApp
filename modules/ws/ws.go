@@ -2,6 +2,7 @@ package ws
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os/exec"
@@ -61,28 +62,40 @@ func HandleMessages() {
 	var msg Message
 	for {
 		msg = <-broadcast
-		fmt.Println(msg)
-
-		kb, err := keybd_event.NewKeyBonding()
-		if err != nil {
-			panic(err)
-		}
-
-		// Виртуальное нажатие клавиши на ПК
-		if msg.Message == "1" {
-			kb.SetKeys(keybd_event.VK_CAPSLOCK)
-			err = kb.Launching()
+		if len(msg.Message) > 7 {
+			_, err := ioutil.ReadFile("text.txt")
+			if err != nil {
+				fmt.Println("Файл не читается или не существует!\n", err)
+			}
+			modifiedString := msg.Message
+			data := []byte(modifiedString)
+			e := ioutil.WriteFile("text.txt", data, 0600)
+			if e != nil {
+				fmt.Println("Не могу создать файл!\n", e)
+			}
+			fmt.Println("Данные об элементах сохранены!")
+		} else {
+			kb, err := keybd_event.NewKeyBonding()
 			if err != nil {
 				panic(err)
 			}
-			// Запуск обычного блокнота
-			path, err := exec.LookPath("Тут можно указать путь к любой программе")
-			if err != nil {
-				fmt.Println("Файл не найден")
+
+			// Виртуальное нажатие клавиши на ПК
+			if msg.Message == "1" {
+				kb.SetKeys(keybd_event.VK_CAPSLOCK)
+				err = kb.Launching()
+				if err != nil {
+					panic(err)
+				}
+				// Запуск обычного блокнота
+				path, err := exec.LookPath("Тут можно указать путь к любой программе")
+				if err != nil {
+					fmt.Println("Файл не найден")
+				}
+				fmt.Printf("Доступ к файлу %s\n", path)
+				cmd := exec.Command("notepad.exe") // Вместо path для примера используется notepad.exe
+				cmd.Run()
 			}
-			fmt.Printf("Доступ к файлу %s\n", path)
-			cmd := exec.Command("notepad.exe") // Вместо path для примера используется notepad.exe
-			cmd.Run()
 		}
 	}
 }
