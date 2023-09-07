@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/micmonay/keybd_event"
@@ -62,7 +63,7 @@ func HandleMessages() {
 	var msg Message
 	for {
 		msg = <-broadcast
-		if len(msg.Message) > 7 {
+		if len(msg.Message) > 30 {
 			_, err := ioutil.ReadFile("text.txt")
 			if err != nil {
 				fmt.Println("Файл не читается или не существует!\n", err)
@@ -80,20 +81,45 @@ func HandleMessages() {
 				panic(err)
 			}
 
+			/* // Запуск обычного блокнота
+			path, err := exec.LookPath("Тут можно указать путь к любой программе")
+			if err != nil {
+				fmt.Println("Файл не найден")
+			}
+			fmt.Printf("Доступ к файлу %s\n", path)
+			cmd := exec.Command("notepad.exe") // Вместо path для примера используется notepad.exe
+			cmd.Run() */
+
 			// Виртуальное нажатие клавиши на ПК
-			if msg.Message == "1" {
-				kb.SetKeys(keybd_event.VK_CAPSLOCK)
+			if msg.Message == "[" {
+
+				kb.SetKeys(keybd_event.VK_SP4)
 				err = kb.Launching()
 				if err != nil {
 					panic(err)
 				}
-				// Запуск обычного блокнота
-				path, err := exec.LookPath("Тут можно указать путь к любой программе")
+			}
+
+			if msg.Message == "]" {
+
+				kb.SetKeys(keybd_event.VK_SP5)
+				err = kb.Launching()
+				if err != nil {
+					panic(err)
+				}
+			}
+
+			//Запуск программы
+			prog := msg.Message[0]
+			if string(prog) == "*" {
+				msg.Message = strings.Replace(msg.Message, "*", "", -1)
+				path, err := exec.LookPath(msg.Message)
 				if err != nil {
 					fmt.Println("Файл не найден")
 				}
+				fmt.Println(msg.Message)
 				fmt.Printf("Доступ к файлу %s\n", path)
-				cmd := exec.Command("notepad.exe") // Вместо path для примера используется notepad.exe
+				cmd := exec.Command(path)
 				cmd.Run()
 			}
 		}

@@ -53,11 +53,11 @@ func main() {
 	}
 
 	// Изменение IPv4 на фронтенде, чтобы иметь возможность подключиться к серверу с телефона
-	file_data, err := ioutil.ReadFile("public/static/js/main.76ac0ff9.js")
+	file_data, err := ioutil.ReadFile("public/static/js/main.9d69a693.js")
 	var ipp = ip
 	modifiedString := strings.Replace(string(file_data), "000.000.000.000:8080", ipp, -1)
 	data := []byte(modifiedString)
-	e := ioutil.WriteFile("public/static/js/main.76ac0ff9.js", data, 0600)
+	e := ioutil.WriteFile("public/static/js/main.9d69a693.js", data, 0600)
 	if e != nil {
 		fmt.Println("Не могу создать файл!\n", e)
 	}
